@@ -291,8 +291,8 @@ class ApplyInstantID:
         face_kps = extractFeatures(insightface, image_kps if image_kps is not None else image[0].unsqueeze(0), extract_kps=True)
 
         if face_kps is None:
-            print(f"\033[33m[InstantID] No face kps detected in input image. Skipping processing.\033[0m")
-            return model, positive, negative
+            face_kps = torch.zeros_like(image) if image_kps is None else image_kps
+            print(f"\033[33mWARNING: No face detected in the keypoints image!\033[0m")
 
         clip_embed = face_embed
         # InstantID works better with averaged embeds (TODO: needs testing)
