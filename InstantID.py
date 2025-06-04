@@ -126,7 +126,14 @@ def _set_model_patch_replace(model, patch_kwargs, key):
     if key not in to["patches_replace"]["attn2"]:
         to["patches_replace"]["attn2"][key] = CrossAttentionPatch(**patch_kwargs)
     else:
-        to["patches_replace"]["attn2"][key].set_new_condition(**patch_kwargs)
+        existing_patch = to["patches_replace"]["attn2"][key]
+        # Check if the existing patch is a CrossAttentionPatch with set_new_condition method
+        if hasattr(existing_patch, 'set_new_condition') and callable(getattr(existing_patch, 'set_new_condition')):
+            existing_patch.set_new_condition(**patch_kwargs)
+        else:
+            # Replace with a new CrossAttentionPatch if the existing patch is incompatible
+            print(f"\033[33mWARNING: Replacing incompatible attention patch at {key}\033[0m")
+            to["patches_replace"]["attn2"][key] = CrossAttentionPatch(**patch_kwargs)
 
 class InstantIDModelLoader:
     @classmethod
