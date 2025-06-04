@@ -458,7 +458,10 @@ class InstantIDAttentionPatch:
 
         face_embed = extractFeatures(insightface, image)
         if face_embed is None:
-            raise Exception('Reference Image: No face detected.')
+            print("\033[33m[InstantIDAttentionPatch] No face detected in image. Skipping patching.\033[0m")
+            # Return model unchanged, and dummy FACE_EMBEDS
+            dummy_embed = torch.zeros((1, 1280), dtype=torch.float32)  # adjust shape as needed
+            return model, { "cond": dummy_embed, "uncond": dummy_embed }
 
         clip_embed = face_embed
         # InstantID works better with averaged embeds (TODO: needs testing)
